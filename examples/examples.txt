@@ -1,0 +1,18 @@
+Text-to-Bitmap Examples
+
+1) encoded_readme.bmp is the README.md file created with the following statement: python text_to_bitmap.py README.md encoded_readme.bmp ada256 12
+
+Seed: ada256
+Min height: 12
+
+2) encoded_readme2.bmp is the same README.md file but with the optional minimum/maximum height parameters omitted.  The statement is: python text_to_bitmap.py README.md encoded_readme2.bmp ada256
+
+Notes: File # 2 is probably easier to hide in another image than File # 1.
+
+The correct statement to decode these files is: python text_to_bitmap.py encoded_readme.bmp ada256
+
+Try decoding either of these files with the incorrect seed.  The closer you are to the seed, the closer you are to the actual result.
+
+3) encoded_license.bmp is the LICENSE file created with the following seed: 123456
+
+4) encoded_examples.bmp is this file you're reading right now created with the following seed: 0f39a3
