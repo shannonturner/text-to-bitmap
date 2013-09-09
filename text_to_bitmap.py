@@ -1,36 +1,6 @@
 import math
 import struct
-import sys
-
-try:
-    if len(sys.argv) in (4,5,6):
-        encode_or_decode = "Encode"
-        text_filename = sys.argv[1]
-        bitmap_filename = sys.argv[2]
-        hexseed = sys.argv[3]
-        minimum_height = 4
-        maximum_height = False
-    elif len(sys.argv) == 3:
-        encode_or_decode = "Decode"
-        bitmap_filename = sys.argv[1]
-        hexseed = sys.argv[2]
-    else:
-        raise IndexError
-
-    if len(sys.argv) >= 5:
-        minimum_height = sys.argv[4] # Optional
-
-    if len(sys.argv) == 6:
-        maximum_height = sys.argv[5] # Optional; if there is a conflict, maximum height takes precedence over minimum height
-        
-except IndexError:
-    print """Parameters for text_to_bitmap.py:
-    To Encode Text as a Bitmap: textfile, bitmap_file, secret_hexseed [minimum_height = 4] [maximum_height]
-    Example: python text_to_bitmap.py "encodeme.txt" "secret.bmp" afb391
-
-    To Decode a Bitmap into Text: bitmap_file, secret_hexseed
-    Example: python text_to_bitmap.py "secret.bmp" afb391"""
-    sys.exit(1)   
+import sys  
 
 def simple_encode(string):
 
@@ -269,8 +239,38 @@ def decode_image_as_text(image_filename, seed = "000000"):
 
 if __name__ == '__main__':
 
+    try:
+
+        if len(sys.argv) in (4,5,6):
+            encode_or_decode = "Encode"
+            text_filename = sys.argv[1]
+            bitmap_filename = sys.argv[2]
+            hexseed = sys.argv[3]
+            minimum_height = 4
+            maximum_height = False
+        elif len(sys.argv) == 3:
+            encode_or_decode = "Decode"
+            bitmap_filename = sys.argv[1]
+            hexseed = sys.argv[2]
+        else:
+            raise IndexError
+
+        if len(sys.argv) >= 5:
+            minimum_height = sys.argv[4] # Optional
+
+        if len(sys.argv) == 6:
+            maximum_height = sys.argv[5] # Optional; if there is a conflict, maximum height takes precedence over minimum height
+        
+    except IndexError:
+        print """Parameters for text_to_bitmap.py:
+        To Encode Text as a Bitmap: textfile, bitmap_file, secret_hexseed [minimum_height = 4] [maximum_height]
+        Example: python text_to_bitmap.py "encodeme.txt" "secret.bmp" afb391
+
+        To Decode a Bitmap into Text: bitmap_file, secret_hexseed
+        Example: python text_to_bitmap.py "secret.bmp" afb391"""
+        sys.exit(1) 
+
     if encode_or_decode == 'Encode':
         encode_text_as_image(text_filename, bitmap_filename, hexseed, minimum_height, maximum_height)
     elif encode_or_decode == 'Decode':
         print decode_image_as_text(bitmap_filename, hexseed)
-    
