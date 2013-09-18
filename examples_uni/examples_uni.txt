@@ -1,0 +1,23 @@
+Unicode-Enabled Text to Bitmap Examples:
+
+Example #1: ꀀ♠☻♪ﬡΦꀀ♠☻♪ﬡΦꀀ♠☻♪ﬡΦꀀ♠☻♪ﬡΦꀀ♠☻♪ﬡΦꀀ♠☻♪ﬡΦ
+
+Example #1 above was encoded as secret_1.bmp with the following instructions:
+	Offset: 932
+	RGB Seed: afb391
+	Addition Position Values: 4
+	RGB Scrambling Values: rgb,bgr
+	
+Example #2:  ὈḨ᷂Ṁẏ᷊ḡồیῌᵴớᶋḕḝᵵ᷿Ỉṭḷᶳᶦ٩۹ᶣḁḺḼᶱᶌᵋⱤᾰḠḁḻṉ
+
+	Example #2 above was encoded as secret_2.bmp with the following instructions:
+	Offset: 1639
+	RGB Seed: ada256
+	Addition Position Values: 20403230124
+	RGB Scrambling Values: grb,rgb,brg,grb,rbg,bgr
+
+Example #3 is this file you're reading right now, encoded as secret_3.bmp with the following instructions:
+	Offset: 33
+	RGB Seed: feeb1e
+	Addition Position Values: 4231020204104
+	RGB Scrambling Values: gbr,rbg,grb,gbr,gbr,rgb,brg
