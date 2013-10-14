@@ -416,10 +416,10 @@ if __name__ == '__main__':
 
         print """\nParameters for text_to_bitmap.py:
         To Encode Unicode Text as a Bitmap: encode textfile, bitmap_file, secret_hexseed, addition_value_position, rgb_value_position, [minimum_height = 4] [maximum_height]
-        Example: python uni_text_to_bitmap.py encode "encodeme.txt" "secret.bmp" afb391 '2420130201202302134' 'gbr,rgb,brg,gbr'
+        Example: python uni_text_to_bitmap.py encode "encodeme.txt" "secret.bmp" afb391 "2420130201202302134" "gbr,rgb,brg,gbr"
 
         To Decode a Bitmap into Unicode Text: decode bitmap_file, secret_hexseed, instructions(offset, addition value position, rgb value position)
-        Example: python uni_text_to_bitmap.py decode "secret.bmp" afb391 932 '2420130201202302134' 'gbr,rgb,brg,gbr' """
+        Example: python uni_text_to_bitmap.py decode "secret.bmp" afb391 932 "2420130201202302134" "gbr,rgb,brg,gbr" """
         
         sys.exit(1)   
 
