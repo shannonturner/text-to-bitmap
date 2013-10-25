@@ -1,4 +1,5 @@
 # uni_text_to_bitmap.py: Adds unicode support
+# last saved in 25842720eb53e5083fedfb1cccb8aff6d2c73dde
 
 import codecs
 import math
@@ -186,7 +187,7 @@ def rgb_triplets(ords, seed, instructions=None):
 
 
 
-def uni_encode_text_as_image(text_filename, image_filename, seed = "000000", instructions = None, minheight = 4, maxheight = False):
+def uni_encode_text_as_image(text_filename, image_filename, seed = "000000", instructions = None, debug_mode = False, minheight = 4, maxheight = False):
 
     """ uni_encode_text_as_image(text_filename, image_filename, seed, instructions, minheight, maxheight): Encodes Unicode text as a bitmap.  Each character is five rgb values (r, g, b, r, g).
             Seed is used to offset the R, G, B values as a layer of security.
@@ -228,10 +229,41 @@ def uni_encode_text_as_image(text_filename, image_filename, seed = "000000", ins
         ord_values = scrambled_ord_values
 
     ord_values.reverse() # Colors are mapped in 'reverse' order.
+
+    if debug_mode:
+        import copy
+        debug_ord_values = copy.deepcopy(ord_values)
             
     color_triplets = rgb_triplets(ord_values, seed, instructions)    
     (width, height) = get_dimensions(color_triplets, minheight, maxheight)
 
+    if debug_mode:
+        
+        with open('debug_encode.csv', 'w') as debug_encode_file:
+
+            # Write the header.  It's a csv, so use abbreviations to preserve column width
+            debug_encode_file.write('---,ORG,---,|||,---,ENC,---\n') # Three columns for the original values, three for the encoded values
+
+            original_triplets = []
+            original_triplet = []
+            # Make into unencoded triplets
+            for debug_ord_value in debug_ord_values:
+                original_triplet.append(debug_ord_value)
+
+                if len(original_triplet) == 3:
+                    original_triplets.append(original_triplet)
+                    original_triplet = []
+
+            else:
+                if original_triplet != []:
+                    while len(original_triplet) < 3:
+                        original_triplet.append(0)
+
+                    original_triplets.append(original_triplet)
+
+            for (original_triplet, encoded_triplet) in zip(original_triplets, color_triplets):
+                debug_encode_file.write('{0},|||,{1}\n'.format(','.join([str(og3) for og3 in original_triplet]), ','.join([str(ec3) for ec3 in encoded_triplet])))
+        
     pixels = plot_points(width, height, color_triplets)
 
     bmp_header = {'mn1':66,
@@ -256,7 +288,7 @@ def uni_encode_text_as_image(text_filename, image_filename, seed = "000000", ins
 
     return
 
-def uni_decode_image_as_text(image_filename, seed = "000000", instructions = None):
+def uni_decode_image_as_text(image_filename, seed = "000000", instructions = None, debug_mode = False):
 
     """ uni_decode_image_as_text(image_filename, seed, instructions): Decodes a bitmap image produced by uni_encode_text_as_image() as long as the seed and instruction values are correct.
             Instructions contains in order:
@@ -379,8 +411,14 @@ def uni_decode_image_as_text(image_filename, seed = "000000", instructions = Non
 
 if __name__ == '__main__':
 
-    try:  
-    
+    try:
+
+        # I'm not including this in the Usage string, but this feature now exists.
+        if 'debug' in str(sys.argv[1]).lower():
+            debug_mode = True
+        else:
+            debug_mode = False
+        
         if 'encode' in str(sys.argv[1]).lower():
             encode_or_decode = "Encode"
             text_filename = sys.argv[2]
@@ -416,18 +454,17 @@ if __name__ == '__main__':
 
         print """\nParameters for text_to_bitmap.py:
         To Encode Unicode Text as a Bitmap: encode textfile, bitmap_file, secret_hexseed, addition_value_position, rgb_value_position, [minimum_height = 4] [maximum_height]
-        Example: python uni_text_to_bitmap.py encode "encodeme.txt" "secret.bmp" afb391 '2420130201202302134' 'gbr,rgb,brg,gbr'
+        Example: python uni_text_to_bitmap.py encode "encodeme.txt" "secret.bmp" afb391 "2420130201202302134" "gbr,rgb,brg,gbr"
 
         To Decode a Bitmap into Unicode Text: decode bitmap_file, secret_hexseed, instructions(offset, addition value position, rgb value position)
-        Example: python uni_text_to_bitmap.py decode "secret.bmp" afb391 932 '2420130201202302134' 'gbr,rgb,brg,gbr' """
+        Example: python uni_text_to_bitmap.py decode "secret.bmp" afb391 932 "2420130201202302134" "gbr,rgb,brg,gbr" """
         
         sys.exit(1)   
 
     if encode_or_decode == 'Encode':
-        uni_encode_text_as_image(text_filename, bitmap_filename, hexseed, instructions, minimum_height, maximum_height)
+        uni_encode_text_as_image(text_filename, bitmap_filename, hexseed, instructions, debug_mode, minimum_height, maximum_height)
     elif encode_or_decode == 'Decode':
         try:
-            print u"{0}".format(uni_decode_image_as_text(bitmap_filename, hexseed, instructions))
+            print u"{0}".format(uni_decode_image_as_text(bitmap_filename, hexseed, instructions, debug_mode))
         except UnicodeEncodeError:
             print "There is a compatibility issue with the Windows console not supporting UTF-8; see http://stackoverflow.com/a/6789057 for more details.  If you run this with Windows, use IDLE or your favorite IDE to run this."
-        
