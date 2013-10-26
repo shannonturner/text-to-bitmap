@@ -1,5 +1,4 @@
 # uni_text_to_bitmap.py: Adds unicode support
-# last saved in 25842720eb53e5083fedfb1cccb8aff6d2c73dde
 
 import codecs
 import math
@@ -347,6 +346,10 @@ def uni_decode_image_as_text(image_filename, seed = "000000", instructions = Non
 
         characters['read_from_file'].reverse()
 
+        if debug_mode:
+            import copy
+            still_encoded = copy.deepcopy(characters['read_from_file'])
+
         # Apply RGB offsets
         for char in characters['read_from_file']:
 
@@ -372,6 +375,9 @@ def uni_decode_image_as_text(image_filename, seed = "000000", instructions = Non
         else:
             if len(groups_of_five) > 0:
                 characters['groups_of_five'].append(groups_of_five)
+
+        if debug_mode:
+            decoded_values = []
 
         # Apply addition value position unscrambling and decode                        
         for group_of_five in characters['groups_of_five']:
@@ -401,11 +407,47 @@ def uni_decode_image_as_text(image_filename, seed = "000000", instructions = Non
 
                     try:
                         decoded_text.append(unichr(original_value + offset))
+                        if debug_mode:
+                            decoded_values.append(original_value + offset)
                     except ValueError:
                         return "[FAILED] Decode failed for Code Point #{0}; confirm that you are using the correct RGB seeds, addition value positions, and RGB value positions.".format(original_value + offset)
                     
                     character_counter = 0
                     original_value = 1
+
+        if debug_mode:
+
+            with open('debug_decode.csv', 'w') as debug_decode_file:
+
+                # Write the header.  It's a csv, so use abbreviations to preserve column width
+                debug_decode_file.write('---,ENC,---,|||,---,DEC,---\n') # Three columns for the still-encoded values, three for the decoded values
+
+                encoded_triplets = []
+                encoded_triplet = []
+
+                for still_encoded_value in still_encoded:
+                    encoded_triplet.append(still_encoded_value)
+
+                    if len(encoded_triplet) == 3:
+                        encoded_triplets.append(encoded_triplet)
+                        encoded_triplet = []
+
+                # There will be 5x fewer decoded numbers since there are four multiplication values and an addition value to create each one
+                while len(decoded_values) < len(still_encoded):
+                    decoded_values.append('') # This will let me use zip below.
+
+                decoded_triplets = []
+                decoded_triplet = []
+
+                for decoded_value in decoded_values:
+                    decoded_triplet.append(decoded_value)
+
+                    if len(decoded_triplet) == 3:
+                        decoded_triplets.append(decoded_triplet)
+                        decoded_triplet = []
+
+                for (encoded_triplet, decoded_triplet) in zip(encoded_triplets, decoded_triplets):
+                    debug_decode_file.write('{0},|||,{1}\n'.format(','.join([str(ec3) for ec3 in encoded_triplet]), ','.join([str(dc3) for dc3 in decoded_triplet])))
 
     return ''.join(decoded_text) 
 
