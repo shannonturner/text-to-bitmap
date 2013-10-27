@@ -473,6 +473,9 @@ if __name__ == '__main__':
 
             minimum_height = 4
             maximum_height = False
+
+            if debug_mode:
+                print "[DEBUG MODE ENABLED] -- THE STEPS TAKEN TO ENCODE YOUR FILE WILL BE SAVED AS debug_encode.csv"
             
         elif 'decode' in str(sys.argv[1]).lower():
             encode_or_decode = "Decode"
@@ -483,6 +486,9 @@ if __name__ == '__main__':
             rgb_value_positions = sys.argv[6]
 
             instructions = [offset, addition_value_positions, rgb_value_positions]
+
+            if debug_mode:
+                print "[DEBUG MODE ENABLED] -- THE STEPS TAKEN TO DECODE YOUR FILE WILL BE SAVED AS debug_decode.csv"
         else:
             raise IndexError
 
