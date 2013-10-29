@@ -7,7 +7,7 @@ import struct
 import sys
 from text_to_bitmap import factors, get_dimensions, bmp_write, row_padding, map_color, map_hexcolor, plot_points
 
-def uni_simple_encode(string):
+def uni_simple_encode(string, debug_mode=False):
 
     """ uni_simple_encode(string): Unicode-enabled version of text_to_bitmap.simple_encode().  Encodes each character as two ord values.
     """
@@ -25,8 +25,11 @@ def uni_simple_encode(string):
         ords.extend(split_number(ord_value - min_ord))
 
     print "\nTO DECODE YOUR MESSAGE YOU WILL NEED THE OFFSET: {0}\n".format(min_ord)
-        
-    return ords
+
+    if debug_mode:
+        return (ords, ord_values)
+    else:        
+        return ords
 
 def split_factors(n):
 
@@ -201,7 +204,10 @@ def uni_encode_text_as_image(text_filename, image_filename, seed = "000000", ins
     if instructions is not None:
         addition_position_instructions = list(instructions[0].replace("'","").replace('"',''))
 
-    ord_values = uni_simple_encode(text)
+    if debug_mode:
+        (ord_values, debug_original_ords) = uni_simple_encode(text, debug_mode)
+    else:
+        ord_values = uni_simple_encode(text)
 
     if instructions is not None:
 
@@ -241,7 +247,7 @@ def uni_encode_text_as_image(text_filename, image_filename, seed = "000000", ins
         with open('debug_encode.csv', 'w') as debug_encode_file:
 
             # Write the header.  It's a csv, so use abbreviations to preserve column width
-            debug_encode_file.write('---,ORG,---,|||,---,ENC,---\n') # Three columns for the original values, three for the encoded values
+            debug_encode_file.write('---,ORG,---,|||,---,POS,---,|||,---,ENC,---\n') # Three columns for the original ords, three for the 5 split/position scrambled values, three for the encoded values
 
             original_triplets = []
             original_triplet = []
@@ -260,8 +266,11 @@ def uni_encode_text_as_image(text_filename, image_filename, seed = "000000", ins
 
                     original_triplets.append(original_triplet)
 
-            for (original_triplet, encoded_triplet) in zip(original_triplets, color_triplets):
-                debug_encode_file.write('{0},|||,{1}\n'.format(','.join([str(og3) for og3 in original_triplet]), ','.join([str(ec3) for ec3 in encoded_triplet])))
+            while len(debug_original_ords) < len(original_triplets):
+                debug_original_ords.append('') # to use with zip
+
+            for (original_ord, original_triplet, encoded_triplet) in zip(debug_original_ords, original_triplets, color_triplets):
+                debug_encode_file.write(',{0},,|||,{1},|||,{2}\n'.format(original_ord, ','.join([str(og3) for og3 in original_triplet]), ','.join([str(ec3) for ec3 in encoded_triplet])))
         
     pixels = plot_points(width, height, color_triplets)
 
