@@ -269,8 +269,17 @@ def uni_encode_text_as_image(text_filename, image_filename, seed = "000000", ins
             while len(debug_original_ords) < len(original_triplets):
                 debug_original_ords.append('') # to use with zip
 
-            for (original_ord, original_triplet, encoded_triplet) in zip(debug_original_ords, original_triplets, color_triplets):
-                debug_encode_file.write(',{0},,|||,{1},|||,{2}\n'.format(original_ord, ','.join([str(og3) for og3 in original_triplet]), ','.join([str(ec3) for ec3 in encoded_triplet])))
+            ord_triplets = []
+            ord_triplet = []
+            for original_ord in debug_original_ords:
+                ord_triplet.append(original_ord)
+
+                if len(ord_triplet) == 3:
+                    ord_triplets.append(ord_triplet)
+                    ord_triplet = []                
+
+            for (original_ord, original_triplet, encoded_triplet) in zip(ord_triplets, original_triplets, color_triplets):
+                debug_encode_file.write('{0},|||,{1},|||,{2}\n'.format(','.join([str(od3) for od3 in original_ord]), ','.join([str(og3) for og3 in original_triplet]), ','.join([str(ec3) for ec3 in encoded_triplet])))
         
     pixels = plot_points(width, height, color_triplets)
 
