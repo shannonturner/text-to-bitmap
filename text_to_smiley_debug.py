@@ -1,13 +1,15 @@
 import struct
 
-def create_csv(bitmap_filename):
+def create_rgb_csv(bitmap_filename):
 
-    " Outputs the RGB values for each pixel of the smiley into text_to_smiley.csv "
+    " Outputs the RGB values for each pixel of the image into debug_rgb_to_csv.csv "
 
     with open(bitmap_filename, 'rb') as bitmap_file:
 
         discard_header = bitmap_file.read(54)
 
+        image_width = list(struct.unpack("<B", discard_header[18])).pop() # width is located in discard_header[18] 
+            
         values = []
 
         discard_end_byte = 0
@@ -17,7 +19,7 @@ def create_csv(bitmap_filename):
             
             char = list(struct.unpack("<B", byte)).pop()
 
-            if discard_end_byte == 40: # (13 pixels * r,g,b) + 1 = end byte to discard
+            if discard_end_byte == (image_width * 3) + 1:
                 discard_end_byte = 0
                 continue              
 
@@ -41,11 +43,11 @@ def create_csv(bitmap_filename):
         else:
             output.append(' ')
 
-        if column_counter == 13:
+        if column_counter == image_width:
             output.append('\n')
             column_counter = 0
 
-    with open("text_to_smiley.csv", "w") as output_file:
+    with open("debug_rgb_to_csv.csv", "w") as output_file:
         output_file.write(''.join(output))
 
         return True
@@ -54,4 +56,5 @@ def create_csv(bitmap_filename):
 if __name__ == '__main__':
 
     import sys
-    create_csv(sys.argv[1])
+    create_rgb_csv(sys.argv[1])
+
