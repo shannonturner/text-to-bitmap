@@ -6,6 +6,8 @@ import random
 import struct
 import sys
 from text_to_bitmap import factors, get_dimensions, bmp_write, row_padding, map_color, map_hexcolor, plot_points
+#from text_to_bitmap_autogen import generate_hexseed, generate_addvalpos, generate_rgbscrambling, create_instructions
+from text_to_bitmap_autogen import create_instructions
 
 def uni_simple_encode(string, debug_mode=False):
 
@@ -478,19 +480,40 @@ if __name__ == '__main__':
             debug_mode = True
         else:
             debug_mode = False
+
+##        To auto-generate the hexseed, addition value position scrambling, and rgb value position scrambling during the encoding process, use 'autoencode' instead of 'encode' and follow with the numerical strength from 1 (weakest) to 9 (strongest).
+##
+##Example: python uni_text_to_bitmap.py autoencode 6 "encodeme.txt" "secret.bmp"
+
         
         if 'encode' in str(sys.argv[1]).lower():
             encode_or_decode = "Encode"
-            text_filename = sys.argv[2]
-            bitmap_filename = sys.argv[3]
-            hexseed = sys.argv[4]
-            addition_value_positions = sys.argv[5]
-            rgb_value_positions = sys.argv[6]
-
-            instructions = [addition_value_positions, rgb_value_positions]
 
             minimum_height = 4
             maximum_height = False
+
+            if 'auto' in str(sys.argv[1]).lower():
+                strength = sys.argv[2]
+                text_filename = sys.argv[3]
+                bitmap_filename = sys.argv[4]
+
+                if len(sys.argv) >= 6:
+                    minimum_height = sys.argv[5] # Optional
+
+                if len(sys.argv) == 7:
+                    maximum_height = sys.argv[6] # Optional
+                
+                (hexseed, addition_value_positions, rgb_value_positions) = create_instructions
+
+                instructions = [addition_value_positions, rgb_value_positions]
+            else:
+                text_filename = sys.argv[2]
+                bitmap_filename = sys.argv[3]
+                hexseed = sys.argv[4]
+                addition_value_positions = sys.argv[5]
+                rgb_value_positions = sys.argv[6]
+
+                instructions = [addition_value_positions, rgb_value_positions]
 
             if debug_mode:
                 print "[DEBUG MODE ENABLED] -- THE STEPS TAKEN TO ENCODE YOUR FILE WILL BE SAVED AS debug_encode.csv"
@@ -519,6 +542,9 @@ if __name__ == '__main__':
     except IndexError:
 
         print """\nParameters for text_to_bitmap.py:
+        To Encode Unicode Text as a Bitmap (and have the encoding details randomly auto-generated): autoencode, encoding_strength, textfile, bitmap_file, [minimum_height = 4] [maximum_height]
+        Example: python uni_text_to_bitmap.py autoencode 9 "encodeme.txt" "secret.bmp"
+
         To Encode Unicode Text as a Bitmap: encode textfile, bitmap_file, secret_hexseed, addition_value_position, rgb_value_position, [minimum_height = 4] [maximum_height]
         Example: python uni_text_to_bitmap.py encode "encodeme.txt" "secret.bmp" afb391 "2420130201202302134" "gbr,rgb,brg,gbr"
 
