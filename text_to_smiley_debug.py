@@ -30,13 +30,14 @@ def create_rgb_csv(bitmap_filename):
     triplet_counter = 0
     column_counter = 0
 
-    for value in reversed(values):
+    for value in values:
 
         triplet_counter += 1
 
         output.append(value)
 
         if triplet_counter == 3:
+            output[-5:] = reversed(output[-5:])
             output.append(',')
             column_counter += 1
             triplet_counter = 0
