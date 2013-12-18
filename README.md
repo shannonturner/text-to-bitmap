@@ -64,5 +64,6 @@ For example, encoding the text "R(48in$2na-q" is likely to look like garbage no 
 
 As another example, encoding the text "508940198412392231381939102" will produce many false leads for your brute-force decoder to trip over.
 
+---------------------
 BOTTOM LINE: Text-to-Bitmap should not be considered to be in the same class of security measures as cryptography, and is not secure from determined decoders.  Do not use Text-to-Bitmap in any situation where actual cryptography would be required.  As stated in the license, Text-to-Bitmap IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
