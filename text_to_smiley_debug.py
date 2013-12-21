@@ -48,8 +48,12 @@ def create_rgb_csv(bitmap_filename):
             output.append('\n')
             column_counter = 0
 
+    output = ''.join(output).split('\n')
+    output.reverse()
+    output = '\n'.join(output)
+
     with open("debug_rgb_to_csv.csv", "w") as output_file:
-        output_file.write(''.join(output))
+        output_file.write(output.strip())
 
         return True
 
