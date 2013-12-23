@@ -1,16 +1,17 @@
 import struct
 
-def create_rgb_csv(bitmap_filename):
+def read_bmp(bitmap_filename):
 
-    " Outputs the RGB values for each pixel of the image into debug_rgb_to_csv.csv "
+    " Opens a bitmap file and returns the header and data bytes "
 
     with open(bitmap_filename, 'rb') as bitmap_file:
 
-        discard_header = bitmap_file.read(54)
+        header = bitmap_file.read(54)
 
-        image_width = list(struct.unpack("<B", discard_header[18])).pop() # width is located in discard_header[18] 
+        image_width = list(struct.unpack("<B", header[18])).pop() # width is located in header[18] 
             
         values = []
+        end_bytes = []
 
         discard_end_byte = 0
 
@@ -21,9 +22,21 @@ def create_rgb_csv(bitmap_filename):
 
             if discard_end_byte == (image_width * 3) + 1:
                 discard_end_byte = 0
+                end_bytes.append(str(char))
                 continue              
 
             values.append(str(char))
+
+    return (header, values, end_bytes)
+    
+
+def create_rgb_csv(bitmap_filename):
+
+    " Outputs the RGB values for each pixel of the image into debug_rgb_to_csv.csv "
+
+    (header, values, end_bytes) = read_bmp(bitmap_filename)
+
+    image_width = list(struct.unpack("<B", header[18])).pop() # width is located in header[18] 
 
     output = []
 
