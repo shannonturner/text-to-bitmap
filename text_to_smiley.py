@@ -40,8 +40,6 @@ def distribute_to_rgb(char_value, base_rgb, midpoint=0, deviation=32, random_zer
         else:
             distributed[color_distribution[index]] = int(color) + distributed[color_distribution[index]]
 
-        print char_value, char_rgb, color_distribution[index], " is ", color, " and new is ", distributed[color_distribution[index]]
-
     return distributed
 
 
@@ -64,6 +62,7 @@ def split_in_half(n):
     " Split a number evenly in half, return two whole numbers "
 
     return ((n // 2), (n - (n // 2)))
+
 
 def alter_base(base_image_filename, altered_image_filename, message):
 
@@ -91,9 +90,9 @@ def alter_base(base_image_filename, altered_image_filename, message):
 
         skip_end_byte += 1
 
-        if skip_end_byte == (image_width * 3) + 1:
+        if skip_end_byte == image_width * 3:
             skip_end_byte = 0
-            output.append(base_end_bytes.pop(0))
+            output.append(struct.pack("<B", 255)) # This clears out most of the corruption, except for 0,4 and 1,4
 
         sextuplet.append(char)
 
@@ -131,12 +130,8 @@ def alter_base(base_image_filename, altered_image_filename, message):
 
             sextuplet = []
 
-    output.append(base_end_bytes.pop(0))
+    output.append(struct.pack("<B", 255))
 
     with open(altered_image_filename, 'wb') as altered_image_file:
         altered_image_file.write(base_header)
         altered_image_file.write(''.join(output))
-                    
-                    
-alter_base('smiletest2.bmp', 'smile_altered_test1.bmp', 'Hmm I wish I could figure out where that wacky image corruption is coming from. I don\'t even think I\'m writing a byte with a value of 48.  What gives?')                
-
