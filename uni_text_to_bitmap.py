@@ -6,7 +6,6 @@ import random
 import struct
 import sys
 from text_to_bitmap import factors, get_dimensions, bmp_write, row_padding, map_color, map_hexcolor, plot_points
-#from text_to_bitmap_autogen import generate_hexseed, generate_addvalpos, generate_rgbscrambling, create_instructions
 from text_to_bitmap_autogen import create_instructions
 
 def uni_simple_encode(string, debug_mode=False):
@@ -201,7 +200,8 @@ def uni_encode_text_as_image(text_filename, image_filename, seed = "000000", ins
     """
 
     with codecs.open(text_filename, encoding='utf-8', mode="rb") as text_file:
-        text = text_file.read().replace("\n", "")
+        text = text_file.read().replace("\n", u"\u3000").replace("\r", u"\u2003").replace(" ", u"\u2000").replace("\t", u"\u2003")
+        text = text + random.choice(text) # this is a really stupid workaround that will probably easily fix issue #6
 
     if instructions is not None:
         addition_position_instructions = list(instructions[0].replace("'","").replace('"',''))
@@ -469,7 +469,7 @@ def uni_decode_image_as_text(image_filename, seed = "000000", instructions = Non
                 for (encoded_triplet, decoded_triplet) in zip(encoded_triplets, decoded_triplets):
                     debug_decode_file.write('{0},|||,{1}\n'.format(','.join([str(ec3) for ec3 in encoded_triplet]), ','.join([str(dc3) for dc3 in decoded_triplet])))
 
-    return ''.join(decoded_text) 
+    return ''.join(decoded_text).replace(u"\u3000", "\n").replace(u"\u2003", "\r").replace(u"\u2000", " ").replace(u"\u2003", "\t") # Added all .replaces() on 2013 Dec 10
 
 if __name__ == '__main__':
 
@@ -480,12 +480,7 @@ if __name__ == '__main__':
             debug_mode = True
         else:
             debug_mode = False
-
-##        To auto-generate the hexseed, addition value position scrambling, and rgb value position scrambling during the encoding process, use 'autoencode' instead of 'encode' and follow with the numerical strength from 1 (weakest) to 9 (strongest).
-##
-##Example: python uni_text_to_bitmap.py autoencode 6 "encodeme.txt" "secret.bmp"
-
-        
+   
         if 'encode' in str(sys.argv[1]).lower():
             encode_or_decode = "Encode"
 
