@@ -190,7 +190,7 @@ def rgb_triplets(ords, seed, instructions=None):
 
 
 
-def uni_encode_text_as_image(text_filename, image_filename, seed = "000000", instructions = None, debug_mode = False, minheight = 4, maxheight = False):
+def uni_encode_text_as_image(text_filename, image_filename, seed = "000000", instructions = None, debug_mode = False, minheight = 4, maxheight = False, as_plaintext = False):
 
     """ uni_encode_text_as_image(text_filename, image_filename, seed, instructions, minheight, maxheight): Encodes Unicode text as a bitmap.  Each character is five rgb values (r, g, b, r, g).
             Seed is used to offset the R, G, B values as a layer of security.
@@ -199,9 +199,13 @@ def uni_encode_text_as_image(text_filename, image_filename, seed = "000000", ins
             NOTE: Text files that are very small may not be large enough to encode properly into a valid bitmap.
     """
 
-    with codecs.open(text_filename, encoding='utf-8', mode="rb") as text_file:
-        text = text_file.read().replace("\n", u"\u3000").replace("\r", u"\u2003").replace(" ", u"\u2000").replace("\t", u"\u2004")
-        text = text + random.choice(text) # this is a really stupid workaround that will probably easily fix issue #6
+    if as_plaintext: # Added for API compatibility
+        text = text_filename + random.choice(text_filename)
+        text = text.replace("\n", u"\u3000").replace("\r", u"\u2003").replace(" ", u"\u2000").replace("\t", u"\u2004")
+    else:
+        with codecs.open(text_filename, encoding='utf-8', mode="rb") as text_file:
+            text = text_file.read().replace("\n", u"\u3000").replace("\r", u"\u2003").replace(" ", u"\u2000").replace("\t", u"\u2004")
+            text = text + random.choice(text) # this is a really stupid workaround that will probably easily fix issue #6
 
     if instructions is not None:
         addition_position_instructions = list(instructions[0].replace("'","").replace('"',''))
