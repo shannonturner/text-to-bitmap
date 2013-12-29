@@ -24,7 +24,7 @@ def bitmap_to_text_api(self, **kwargs):
 
     from uni_text_to_bitmap import uni_decode_image_as_text
 
-    instructions = [offset, '{0}'.format(addvalpos), '{0}'.format(rgborder)]
+    instructions = [int(offset), '{0}'.format(addvalpos), '{0}'.format(rgborder)]
 
     return json.dumps({'decoded_text': u'{0}'.format(uni_decode_image_as_text(image_to_decode, rgbseed, instructions, as_plaintext=True))})
 
