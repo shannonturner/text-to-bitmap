@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Text-to-bitmap Challenges by shannonturner</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Text-to-bitmap</h1>
+        <h2>Encodes your text as a bitmap</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/shannonturner/text-to-bitmap/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/shannonturner/text-to-bitmap/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/shannonturner/text-to-bitmap" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <p>Text-to-Bitmap</p>
+
+      <h3>Examples of Text to Bitmap in Action</h3>
+      
+      <h3>These examples were encoded using the first version of Text to Bitmap.</h3>
+      
+      <h4>Example #1</h4>
+      <img src="examples/encoded_license.bmp">
+      <p>This image contains the text in the <a href="LICENSE" target="_blank">LICENSE</a> file, and was encoded with the value 123456.</p>
+      
+      <h4>Example #2</h4>
+      <img src="examples/encoded_examples.bmp">
+      <p>This image contains the text in the <a href="examples/examples.txt" target="_blank">examples/examples.txt</a> file, and was encoded with the value 0f39a3.</p>
+      
+      <h3>The following three examples were encoded using the Unicode Version of Text to Bitmap.  This version is preferred, has vastly improved security, and supports all languages in the UTF-8 character set.</h3>
+
+      <h4>Example #1</h4>
+      <img src="examples_uni/secret_1.bmp">
+      <p>This image contains the text ꀀ♠☻♪ﬡΦꀀ♠☻♪ﬡΦꀀ♠☻♪ﬡΦꀀ♠☻♪ﬡΦꀀ♠☻♪ﬡΦꀀ♠☻♪ﬡΦ</p>
+      <ul>Encoding / Decoding Instructions
+        <li>Offset: 932</li>
+        <li>RGB Seed: afb391</li>
+        <li>Addition Position Values: 4</li>
+        <li>RGB Scrambling Values: rgb,bgr</li>
+      </ul>
+        
+      <h4>Example #2</h4>
+      <img src="examples_uni/secret_2.bmp">
+      <p>This image contains the text: ὈḨ᷂Ṁẏ᷊ḡồیῌᵴớᶋḕḝᵵ᷿Ỉṭḷᶳᶦ٩۹ᶣḁḺḼᶱᶌᵋⱤᾰḠḁḻṉ</p>
+      <ul>Encoding / Decoding Instructions
+        <li>Offset: 1639</li>
+        <li>RGB Seed: ada256</li>
+        <li>Addition Position Values: 20403230124</li>
+        <li>RGB Scrambling Values: grb,rgb,brg,grb,rbg,bgr</li>
+      </ul>
+
+      <h4>Example #3</h4>
+      <img src="examples_uni/secret_3.bmp">
+      <p>This image contains all of the text in the file: <a href="examples_uni/examples_uni.txt" target="_blank">examples_uni/examples_uni.txt</a></p>
+      <ul>Encoding / Decoding Instructions
+        <li>Offset: 33</li>
+        <li>RGB Seed: feeb1e</li>
+        <li>Addition Position Values: 4231020204104</li>
+        <li>RGB Scrambling Values: gbr,rbg,grb,gbr,gbr,rgb,brg</li>
+      </ul>
+
+
+      </section>
+    </div>
+
+    
+  </body>
+</html>
