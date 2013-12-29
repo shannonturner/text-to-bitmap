@@ -28,9 +28,9 @@ def uni_simple_encode(string, debug_mode=False):
     print "\nTO DECODE YOUR MESSAGE YOU WILL NEED THE OFFSET: {0}\n".format(min_ord)
 
     if debug_mode:
-        return (ords, ord_values)
+        return (ords, min_ord, ord_values)
     else:        
-        return ords
+        return ords, min_ord
 
 def split_factors(n):
 
@@ -211,9 +211,9 @@ def uni_encode_text_as_image(text_filename, image_filename, seed = "000000", ins
         addition_position_instructions = list(instructions[0].replace("'","").replace('"',''))
 
     if debug_mode:
-        (ord_values, debug_original_ords) = uni_simple_encode(text, debug_mode)
+        (ord_values, offset_value, debug_original_ords) = uni_simple_encode(text, debug_mode)
     else:
-        ord_values = uni_simple_encode(text)
+        (ord_values, offset_value) = uni_simple_encode(text)
 
     if instructions is not None:
 
@@ -309,7 +309,7 @@ def uni_encode_text_as_image(text_filename, image_filename, seed = "000000", ins
 
     bmp_write(bmp_header, ''.join(pixels), image_filename)
 
-    return
+    return offset_value
 
 def uni_decode_image_as_text(image_filename, seed = "000000", instructions = None, debug_mode = False):
 
