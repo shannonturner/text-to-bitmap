@@ -1,12 +1,12 @@
 #!/usr/local/bin/python2.7
 
-def bitmap_to_text_api(
-        bitmap_filename=None,
-        offset=None,
-        rgbseed=None,
-        addvalpos=None,
-        rgborder=None
-    ):
+def bitmap_to_text_api(self, **kwargs):
+
+    bitmap_filename = kwargs.get('bitmap_filename')
+    offset = kwargs.get('offset')
+    rgbseed = kwargs.get('rgbseed')
+    addvalpos = kwargs.get('addvalpos')
+    rgborder = kwargs.get('rgborder')
 
     import json
 
@@ -22,18 +22,20 @@ def bitmap_to_text_api(
 
     image_to_decode = response.content
 
+    from uni_text_to_bitmap import uni_decode_image_as_text
+
     instructions = [offset, '{0}'.format(addvalpos), '{0}'.format(rgborder)]
 
     return json.dumps({'decoded_text': u'{0}'.format(uni_decode_image_as_text(image_to_decode, rgbseed, instructions, as_plaintext=True))})
 
     
 
-def text_to_bitmap_api(
-        text_to_encode=None,
-        rgbseed=None,
-        addvalpos=None,
-        rgborder=None
-    ):
+def text_to_bitmap_api(self, **kwargs):
+
+    text_to_encode = kwargs.get('text_to_encode')
+    rgbseed = kwargs.get('rgbseed')
+    addvalpos = kwargs.get('addvalpos')
+    rgborder = kwargs.get('rgborder')
 
     import hashlib
     import json
