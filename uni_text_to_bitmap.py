@@ -311,7 +311,7 @@ def uni_encode_text_as_image(text_filename, image_filename, seed = "000000", ins
 
     return offset_value
 
-def uni_decode_image_as_text(image_filename, seed = "000000", instructions = None, debug_mode = False):
+def uni_decode_image_as_text(image_filename, seed = "000000", instructions = None, debug_mode = False, as_plaintext = False):
 
     """ uni_decode_image_as_text(image_filename, seed, instructions): Decodes a bitmap image produced by uni_encode_text_as_image() as long as the seed and instruction values are correct.
             Instructions contains in order:
@@ -319,6 +319,16 @@ def uni_decode_image_as_text(image_filename, seed = "000000", instructions = Non
             [1]: The addition value positions to unscramble
             [2]: The RGB scrambling values
     """
+
+    if as_plaintext:
+        import hashlib
+        temp_filename = 'temp/{0}.bmp'.format(hashlib.sha256(image_filename).hexdigest()[:16])
+        
+        # Create temporary file
+        with open(temp_filename, 'wb') as temp_file:
+            temp_file.write(image_filename)
+
+        image_filename = temp_filename # For compatibility with the rest of the function, which expects a filename         
 
     (rseed, gseed, bseed) = (int(seed[0:2], base=16), int(seed[2:4], base=16), int(seed[4:6], base=16))
 
