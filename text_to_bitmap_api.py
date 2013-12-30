@@ -67,6 +67,6 @@ def text_to_bitmap_api(self, **kwargs):
     return json.dumps({'offset': offset,
                        'rgbseed': rgbseed,
                        'addvalpos': addvalpos,
-                       'rgb_order': rgborder,
+                       'rgborder': rgborder,
                        'file_url': bitmap_filename
                        })
