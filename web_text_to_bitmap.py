@@ -9,6 +9,12 @@ class Root(object):
 
     from text_to_bitmap_api import bitmap_to_text_api as bitmap_to_text
     bitmap_to_text.exposed = True
+
+    from api_front import api_front as api_front
+    api_front.exposed = True
+
+    index = api_front
+    index.exposed = True
   
 if __name__ == '__main__':
 
