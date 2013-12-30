@@ -54,13 +54,13 @@ def api_front(self, **kwargs):
 
         if response.get('error') is None:
 
-            if '[FAILED] Decode failed for Code Point' in response.get('decoded_text',''):
-                page_source.append('<h3>Failed to decode.</h3><br><b>Are you sure your decoding instructions are correct?</b><br>{0}'.format(response.get('decoded_text')))
-            else:
+            if response.get('decode_error') is None:
                 try:
                     page_source.append('<h3>Your image was successfully decoded!</h3><br>Message:<hr><br>{0}<hr>'.format(response['decoded_text']))
                 except Exception:
                     page_source.append('<h3>Failed to decode.</h3><br><b>Are you sure your decoding instructions are correct?</b><br>')
+            else:
+                page_source.append('<h3>Failed to decode.</h3><br><b>Are you sure your decoding instructions are correct?</b><br>')
 
     with open('t2bapi_front_footer.html', 'r') as footer_file:
         page_source.append(footer_file.read())

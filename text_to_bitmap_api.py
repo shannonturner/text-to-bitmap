@@ -11,7 +11,7 @@ def bitmap_to_text_api(self, **kwargs):
     import json
 
     if bitmap_filename is None or offset is None or rgbseed is None or addvalpos is None or rgborder is None:
-        return json.dumps("{'error': 'All fields required.'}")
+        return json.dumps("{'error': 'All fields (bitmap_filename, offset, rgbseed, addvalpos, rgborder) required.'}")
 
     import requests
 
@@ -26,7 +26,10 @@ def bitmap_to_text_api(self, **kwargs):
 
     instructions = [int(offset), '{0}'.format(addvalpos), '{0}'.format(rgborder)]
 
-    return json.dumps({'decoded_text': u'{0}'.format(uni_decode_image_as_text(image_to_decode, rgbseed, instructions, as_plaintext=True))})
+    try:
+        return json.dumps({'decoded_text': u'{0}'.format(uni_decode_image_as_text(image_to_decode, rgbseed, instructions, as_plaintext=True))})
+    except Exception:
+        return json.dumps({'decode_error': 'Failed to decode.  Are you sure your decoding instructions are correct?'})
 
     
 
@@ -43,7 +46,7 @@ def text_to_bitmap_api(self, **kwargs):
     from uni_text_to_bitmap import uni_encode_text_as_image
 
     if text_to_encode is None:
-        return json.dumps("{'error': 'Text to encode is a required field.'}")
+        return json.dumps("{'error': 'text_to_encode is a required field.'}")
 
     if rgbseed is None:
         from text_to_bitmap_autogen import generate_hexseed
