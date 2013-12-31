@@ -42,6 +42,7 @@ def text_to_bitmap_api(self, **kwargs):
 
     import hashlib
     import json
+    import random
     import time
     from uni_text_to_bitmap import uni_encode_text_as_image
 
@@ -53,12 +54,10 @@ def text_to_bitmap_api(self, **kwargs):
         rgbseed = ''.join(list(generate_hexseed(1))) # When issue #3 is resolved, you can change this to allow more seeds similar to text_to_bitmap_autogen.create_instructions()
 
     if addvalpos is None:
-        import random
         from text_to_bitmap_autogen import generate_addvalpos
         addvalpos = ''.join(list(generate_addvalpos(random.randint(4, 24))))
 
     if rgborder is None:
-        import random
         from text_to_bitmap_autogen import generate_rgbscrambling
         rgborder = ','.join(list(generate_rgbscrambling(random.randint(4, 12))))
 
@@ -73,3 +72,4 @@ def text_to_bitmap_api(self, **kwargs):
                        'rgborder': rgborder,
                        'file_url': bitmap_filename
                        })
+
