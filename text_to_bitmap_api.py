@@ -11,14 +11,14 @@ def bitmap_to_text_api(self, **kwargs):
     import json
 
     if bitmap_filename is None or offset is None or rgbseed is None or addvalpos is None or rgborder is None:
-        return json.dumps("{'error': 'All fields (bitmap_filename, offset, rgbseed, addvalpos, rgborder) required.'}")
+        return json.dumps({'error': 'All fields (bitmap_filename, offset, rgbseed, addvalpos, rgborder) required.'})
 
     import requests
 
     try:
         response = requests.get(bitmap_filename)
     except requests.exception.RequestException:
-        return json.dumps("{'error': 'Fetch failed', 'url': '{0}'}".format(bitmap_filename))
+        return json.dumps({'error': 'Fetch failed', 'url': '{0}'}.format(bitmap_filename))
 
     image_to_decode = response.content
 
@@ -47,7 +47,7 @@ def text_to_bitmap_api(self, **kwargs):
     from uni_text_to_bitmap import uni_encode_text_as_image
 
     if text_to_encode is None:
-        return json.dumps("{'error': 'text_to_encode is a required field.'}")
+        return json.dumps({'error': 'text_to_encode is a required field.'})
 
     if rgbseed is None:
         from text_to_bitmap_autogen import generate_hexseed
@@ -72,4 +72,31 @@ def text_to_bitmap_api(self, **kwargs):
                        'rgborder': rgborder,
                        'file_url': bitmap_filename
                        })
+
+
+def text_to_smiley_api(self, **kwargs):
+
+    text_to_encode = kwargs.get('text_to_encode')
+    
+    if text_to_encode is None:
+        return json.dumps({'error': 'text_to_encode is a required field.'})
+
+    import hashlib
+    import random
+    import time
+
+    unique_id = hashlib.sha256('{0}{1}'.format(''.join([str(time_chunk) for time_chunk in time.localtime()[:6]]), random.randint(1,100))).hexdigest()[:10]
+    bitmap_filename = 's_{0}-{1}.bmp'.format(''.join([str(time_chunk) for time_chunk in time.localtime()[:6]]), unique_id)
+   
+    return_message = {}
+
+    if len(text_to_encode) > 84:
+        return_message['length_warning'] = 'Only messages of 84 or fewer characters may be entered.  Message will be truncated.'
+
+    alter_base('base_smiley.bmp', bitmap_filename, text_to_encode)
+
+    return_message['bitmap_filename'] = bitmap_filename
+
+    return json.dumps(return_message)
+
 
