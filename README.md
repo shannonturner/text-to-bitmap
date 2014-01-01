@@ -8,7 +8,7 @@ The lesson here: creativity flows from unexpected places.
 
 Actual creation of the bitmap in Python is loosely based on http://pseentertainmentcorp.com/smf/index.php?topic=2034.0
 
-Text-to-Bitmap now has two versions: ASCII (initial release) and Unicode.
+Text-to-Bitmap now has two versions: ASCII (initial release) and Unicode.  Text to Bitmap now also includes an API.
 
 -----------------------
 Unicode Version Notes:
@@ -40,7 +40,11 @@ Combining RGB Scrambling of six possible values and Adding Value Position Scramb
 
 Much higher if they didn't know which language or character set to go through.
 
-In this example, only one set of Adding Value Position Scrambling is used, and only one set of RGB scrambling is used.  But multiples of each of these could be used, sharply increasing the amount of brute force attempts necessary.
+In this example, only one set of Adding Value Position Scrambling is used, and only one set of RGB scrambling is used.  But multiples of each of these could be used, sharply increasing the amount of brute force attempts necessary.  The API takes full advantage of this feature, and therefore for images encoded with the API, there is a 
+
+1 in 108,839,051,999,998,858,739,822,100,480,000 chance of an attacker getting the correct message.
+
+Future versions will allow multiple RGB offsets to be applied instead of a single one, which will make brute force attacks unfeasible, unreliable, and heavily subject to false positives.
 
 ---------------------
 ASCII Version Notes:
