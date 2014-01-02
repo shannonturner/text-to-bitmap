@@ -42,7 +42,7 @@ Much higher if they didn't know which language or character set to go through.
 
 In this example, only one set of Adding Value Position Scrambling is used, and only one set of RGB scrambling is used.  But multiples of each of these could be used, sharply increasing the amount of brute force attempts necessary.  The API takes full advantage of this feature, and therefore for images encoded with the API, there is a 
 
-1 in 108,839,051,999,998,858,739,822,100,480,000 chance of an attacker getting the correct message.
+1 in 108,839,051,999,998,858,739,822,100,480,000 chance of an attacker getting the correct message if the offset is known; and a 1 in 7,129,393,262,207,925,242,893,306,869,841,920,000 chance if not.
 
 Future versions will allow multiple RGB offsets to be applied instead of a single one, which will make brute force attacks unfeasible, unreliable, and heavily subject to false positives.
 
