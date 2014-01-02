@@ -1,3 +1,6 @@
+#!/usr/local/bin/python2.7
+
+import itertools
 import random
 
 def generate_hexseed(n):
@@ -8,6 +11,17 @@ def generate_hexseed(n):
     for value in xrange(n):       
         yield "{0:0>6x}".format(random.randint(0, 16777216))
 
+def generate_nonrandom_hexseed(start=0, end=16777216):
+
+    " Generates non-randomly generated hex values of between the accepted ranges of 000000-FFFFFF. "
+
+    assert start >= 0
+    assert end <= 16777216
+    assert start < end
+
+    for value in xrange(start, end + 1):
+        yield "{0:0>6x}".format(value)
+
 def generate_addvalpos(n):
 
     """ Generates n randomly generated addition value position offsets between 0 and 4.
@@ -16,6 +30,16 @@ def generate_addvalpos(n):
     for value in xrange(n):
         yield str(random.randint(0, 4))
 
+def generate_nonrandom_addvalpos(min_length=4, max_length=24):
+
+    " Generates non-randomly generated addition value position offsets between 0 and 4, between the min_length and max_length.  Minimum and maximum length contain the default range provided by the API."
+
+    permutations = [str(x) for x in range(5)]
+
+    for current in xrange(min_length, max_length + 1):
+        yield [''.join(avp) for avp in itertools.product(permutations, repeat=current)]
+
+
 def generate_rgbscrambling(n):
 
     """ Generates n randomly generated RGB position scrambles.
@@ -23,6 +47,15 @@ def generate_rgbscrambling(n):
 
     for value in xrange(n):
         yield ''.join(random.sample(['r', 'g', 'b'], 3))
+
+def generate_nonrandom_rgbscrambling(min_length=4, max_length=12):
+
+    " Generates non-randomly generated rgb scrambling ordering values, between the min_length and max_length.  Minimum and maximum length contain the default range provided by the API."
+
+    permutations = [''.join(rgborder) for rgborder in itertools.permutations('ABC')]
+
+    for current in xrange(min_length, max_length + 1):
+        yield [','.join(grouping) for grouping in itertools.product(permutations, repeat=current)]
 
 def create_instructions(n):
 
