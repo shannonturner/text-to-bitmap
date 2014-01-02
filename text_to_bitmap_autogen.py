@@ -57,6 +57,13 @@ def generate_nonrandom_rgbscrambling(min_length=4, max_length=12):
     for current in xrange(min_length, max_length + 1):
         yield [','.join(grouping) for grouping in itertools.product(permutations, repeat=current)]
 
+def generate_nonrandom_offset(start=32, end=65535):
+
+    " Generates non-randomly generated universally-applied offsets between start and end. "
+
+    for offset in xrange(start, end + 1):
+        yield offset
+
 def create_instructions(n):
 
     """ Generates the instructions according to a set level of strength.
