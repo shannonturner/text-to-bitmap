@@ -29,7 +29,7 @@ def bitmap_to_text_api(self, **kwargs):
     from uni_text_to_bitmap import uni_decode_image_as_text
 
     if ((offset is None and rgbseed is None and addvalpos is None and rgborder is None) and password is not None):
-        password_dictionary = pickle.loads(password)
+        password_dictionary = pickle.loads(password.replace(' ', '\n'))
         offset = password_dictionary['offset']
         rgbseed = password_dictionary['rgbseed']
         addvalpos = password_dictionary['addvalpos']
