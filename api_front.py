@@ -9,6 +9,7 @@ def api_front(self, **kwargs):
     rgbseed = kwargs.get('rgbseed')
     addvalpos = kwargs.get('addvalpos')
     rgborder = kwargs.get('rgborder')
+    password = kwargs.get('password')
 
     text_to_encode = kwargs.get('text_to_encode')
 
