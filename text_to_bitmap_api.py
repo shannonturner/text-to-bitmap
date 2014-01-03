@@ -7,12 +7,16 @@ def bitmap_to_text_api(self, **kwargs):
     rgbseed = kwargs.get('rgbseed')
     addvalpos = kwargs.get('addvalpos')
     rgborder = kwargs.get('rgborder')
+    password = kwargs.get('password')
 
     import json
 
-    if bitmap_filename is None or offset is None or rgbseed is None or addvalpos is None or rgborder is None:
-        return json.dumps({'error': 'All fields (bitmap_filename, offset, rgbseed, addvalpos, rgborder) required.'})
+    if bitmap_filename is None:          
 
+        if ((offset is None or rgbseed is None or addvalpos is None or rgborder is None) and password is None):
+            return json.dumps({'error': 'All fields (bitmap_filename, offset, rgbseed, addvalpos, rgborder) required. Optionally, you may use (bitmap_filename and password)'})
+
+    import pickle
     import requests
 
     try:
@@ -23,6 +27,13 @@ def bitmap_to_text_api(self, **kwargs):
     image_to_decode = response.content
 
     from uni_text_to_bitmap import uni_decode_image_as_text
+
+    if ((offset is None and rgbseed is None and addvalpos is None and rgborder is None) and password is not None):
+        password_dictionary = pickle.load(password)
+        offset = password_dictionary['offset']
+        rgbseed = password_dictionary['rgbseed']
+        addvalpos = password_dictionary['addvalpos']
+        rgborder = password_dictionary['rgborder']
 
     instructions = [int(offset), '{0}'.format(addvalpos), '{0}'.format(rgborder)]
 
@@ -42,6 +53,7 @@ def text_to_bitmap_api(self, **kwargs):
 
     import hashlib
     import json
+    import pickle
     import random
     import time
     from uni_text_to_bitmap import uni_encode_text_as_image
@@ -66,12 +78,18 @@ def text_to_bitmap_api(self, **kwargs):
     
     offset = uni_encode_text_as_image(text_to_encode, bitmap_filename, rgbseed, [addvalpos, rgborder], as_plaintext = True)
 
-    return json.dumps({'offset': offset,
+    decoding_details = {'offset': offset,
                        'rgbseed': rgbseed,
                        'addvalpos': addvalpos,
                        'rgborder': rgborder,
                        'file_url': bitmap_filename
-                       })
+                       }
+    
+    serialized_password = pickle.dumps(decoding_details)
+
+    decoding_details['password'] = serialized_password
+
+    return json.dumps(decoding_details)
 
 
 def text_to_smiley_api(self, **kwargs):

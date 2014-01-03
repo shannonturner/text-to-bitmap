@@ -43,12 +43,22 @@ def api_front(self, **kwargs):
             page_source.append('<li>RGB Ordering: {0}</li>'.format(response['rgborder']))
             page_source.append('<li>RGB Seed: {0}</li>'.format(response['rgbseed']))
             page_source.append('<li>Offset: {0}</li></ul>'.format(response['offset']))
+            page_source.append('<br><i>Or, just send your intended recipient this password:</i><b>{0}</b>'.format(response['password']))
 
-    elif action == 'decode' and bitmap_filename is not None and offset is not None and rgbseed is not None and addvalpos is not None and rgborder is not None:
+    elif action == 'decode' and bitmap_filename is not None and ((offset is not None and rgbseed is not None and addvalpos is not None and rgborder is not None) or password is not None):
         
         import requests
 
-        param_string = '?bitmap_filename={0}&offset={1}&rgbseed={2}&addvalpos={3}&rgborder={4}'.format(bitmap_filename, offset, rgbseed, addvalpos, rgborder)
+        if offset is not None and rgbseed is not None and addvalpos is not None and rgborder is not None:
+            param_string = '?bitmap_filename={0}&offset={1}&rgbseed={2}&addvalpos={3}&rgborder={4}'.format(bitmap_filename, offset, rgbseed, addvalpos, rgborder)
+        elif password is not None:
+            import pickle
+            password_dictionary = pickle.load(password)
+            offset = password_dictionary['offset']
+            rgbseed = password_dictionary['rgbseed']
+            addvalpos = password_dictionary['addvalpos']
+            rgborder = password_dictionary['rgborder']
+            param_string = '?bitmap_filename={0}&offset={1}&rgbseed={2}&addvalpos={3}&rgborder={4}'.format(bitmap_filename, offset, rgbseed, addvalpos, rgborder)
 
         response = requests.get('http://shannonvturner.com/t2b/bitmap_to_text{0}'.format(param_string)).json()
 
