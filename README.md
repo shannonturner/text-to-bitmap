@@ -8,7 +8,7 @@ The lesson here: creativity flows from unexpected places.
 
 Actual creation of the bitmap in Python is loosely based on http://pseentertainmentcorp.com/smf/index.php?topic=2034.0
 
-Text-to-Bitmap now has two versions: ASCII (initial release) and Unicode.
+Text-to-Bitmap now has two versions: ASCII (initial release) and Unicode.  Text to Bitmap now also includes an API.
 
 -----------------------
 Unicode Version Notes:
@@ -40,7 +40,11 @@ Combining RGB Scrambling of six possible values and Adding Value Position Scramb
 
 Much higher if they didn't know which language or character set to go through.
 
-In this example, only one set of Adding Value Position Scrambling is used, and only one set of RGB scrambling is used.  But multiples of each of these could be used, sharply increasing the amount of brute force attempts necessary.
+In this example, only one set of Adding Value Position Scrambling is used, and only one set of RGB scrambling is used.  But multiples of each of these could be used, sharply increasing the amount of brute force attempts necessary.  The API takes full advantage of this feature, and therefore for images encoded with the API, there is a 
+
+1 in 108,839,051,999,998,858,739,822,100,480,000 chance of an attacker getting the correct message if the offset is known; and a 1 in 7,129,393,262,207,925,242,893,306,869,841,920,000 chance if not.
+
+Future versions will allow multiple RGB offsets to be applied instead of a single one, which will make brute force attacks unfeasible, unreliable, and heavily subject to false positives.
 
 ---------------------
 ASCII Version Notes:
@@ -64,5 +68,6 @@ For example, encoding the text "R(48in$2na-q" is likely to look like garbage no 
 
 As another example, encoding the text "508940198412392231381939102" will produce many false leads for your brute-force decoder to trip over.
 
+---------------------
 BOTTOM LINE: Text-to-Bitmap should not be considered to be in the same class of security measures as cryptography, and is not secure from determined decoders.  Do not use Text-to-Bitmap in any situation where actual cryptography would be required.  As stated in the license, Text-to-Bitmap IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
