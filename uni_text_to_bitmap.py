@@ -322,7 +322,7 @@ def uni_decode_image_as_text(image_filename, seed = "000000", instructions = Non
 
     if as_plaintext:
         import hashlib
-        temp_filename = '../temp/{0}.bmp'.format(hashlib.sha256(image_filename).hexdigest()[:16])
+        temp_filename = 'temp/{0}.bmp'.format(hashlib.sha256(image_filename).hexdigest()[:16])
         
         # Create temporary file
         with open(temp_filename, 'wb') as temp_file:
