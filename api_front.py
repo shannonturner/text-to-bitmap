@@ -54,7 +54,7 @@ def api_front(self, **kwargs):
             param_string = '?bitmap_filename={0}&offset={1}&rgbseed={2}&addvalpos={3}&rgborder={4}'.format(bitmap_filename, offset, rgbseed, addvalpos, rgborder)
         elif password is not None:
             import pickle
-            password_dictionary = pickle.loads(password)
+            password_dictionary = pickle.loads(password.replace(' ', '\n'))
             offset = password_dictionary['offset']
             rgbseed = password_dictionary['rgbseed']
             addvalpos = password_dictionary['addvalpos']
