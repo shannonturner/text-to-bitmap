@@ -52,7 +52,7 @@ def generate_nonrandom_rgbscrambling(min_length=4, max_length=12):
 
     " Generates non-randomly generated rgb scrambling ordering values, between the min_length and max_length.  Minimum and maximum length contain the default range provided by the API."
 
-    permutations = [''.join(rgborder) for rgborder in itertools.permutations('ABC')]
+    permutations = [''.join(rgborder) for rgborder in itertools.permutations('rgb')]
 
     for current in xrange(min_length, max_length + 1):
         yield [','.join(grouping) for grouping in itertools.product(permutations, repeat=current)]
