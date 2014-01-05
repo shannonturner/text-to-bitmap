@@ -37,7 +37,8 @@ def generate_nonrandom_addvalpos(min_length=4, max_length=24):
     permutations = [str(x) for x in range(5)]
 
     for current in xrange(min_length, max_length + 1):
-        yield [''.join(avp) for avp in itertools.product(permutations, repeat=current)]
+        for avp in itertools.product(permutations, repeat=current):
+            yield ''.join(avp)
 
 
 def generate_rgbscrambling(n):
@@ -55,7 +56,8 @@ def generate_nonrandom_rgbscrambling(min_length=4, max_length=12):
     permutations = [''.join(rgborder) for rgborder in itertools.permutations('rgb')]
 
     for current in xrange(min_length, max_length + 1):
-        yield [','.join(grouping) for grouping in itertools.product(permutations, repeat=current)]
+        for grouping in itertools.product(permutations, repeat=current):
+            yield ','.join(grouping)
 
 def generate_nonrandom_offset(start=32, end=65535):
 

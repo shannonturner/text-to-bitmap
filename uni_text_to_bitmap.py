@@ -311,7 +311,7 @@ def uni_encode_text_as_image(text_filename, image_filename, seed = "000000", ins
 
     return offset_value
 
-def uni_decode_image_as_text(image_filename, seed = "000000", instructions = None, debug_mode = False, as_plaintext = False):
+def uni_decode_image_as_text(image_filename, seed = "000000", instructions = None, debug_mode = False, as_plaintext = False, as_bytes = False):
 
     """ uni_decode_image_as_text(image_filename, seed, instructions): Decodes a bitmap image produced by uni_encode_text_as_image() as long as the seed and instruction values are correct.
             Instructions contains in order:
@@ -319,8 +319,13 @@ def uni_decode_image_as_text(image_filename, seed = "000000", instructions = Non
             [1]: The addition value positions to unscramble
             [2]: The RGB scrambling values
     """
+    (rseed, gseed, bseed) = (int(seed[0:2], base=16), int(seed[2:4], base=16), int(seed[4:6], base=16))
 
-    if as_plaintext:
+    assert 0 <= rseed <= 255
+    assert 0 <= gseed <= 255
+    assert 0 <= bseed <= 255
+
+    if as_plaintext: # Leaving this for compatibility with the API as it exists now
         import hashlib
         temp_filename = 'temp/{0}.bmp'.format(hashlib.sha256(image_filename).hexdigest()[:16])
         
@@ -328,160 +333,162 @@ def uni_decode_image_as_text(image_filename, seed = "000000", instructions = Non
         with open(temp_filename, 'wb') as temp_file:
             temp_file.write(image_filename)
 
-        image_filename = temp_filename # For compatibility with the rest of the function, which expects a filename         
+        with open(image_filename, "rb") as decode_file:
+            discard_header = decode_file.read(54)
+            bitmap_values = decode_file.read()
 
-    (rseed, gseed, bseed) = (int(seed[0:2], base=16), int(seed[2:4], base=16), int(seed[4:6], base=16))
+        image_filename = temp_filename # For compatibility with the rest of the function, which expects a filename
+    elif as_bytes:
+        discard_header = image_filename[:54]
+        bitmap_values = image_filename[54:]
+    else:
+        with open(image_filename, "rb") as decode_file:
+            discard_header = decode_file.read(54)
+            bitmap_values = decode_file.read()  
 
-    assert 0 <= rseed <= 255
-    assert 0 <= gseed <= 255
-    assert 0 <= bseed <= 255
+    decoded_text = []
 
-    with open(image_filename, "rb") as decode_file:
-        discard_header = decode_file.read(54)
+    character_counter = 0
+    original_value = 1
 
-        decoded_text = []
+    if instructions is None:
+        rgbseeds = [rseed, gseed, bseed]
+    else:
 
-        character_counter = 0
-        original_value = 1
+        offset = int(instructions[0])
+        addition_value_positions = list(instructions[1])
+        rgb_value_positions = instructions[2]
 
-        if instructions is None:
-            rgbseeds = [rseed, gseed, bseed]
+        rgbseeds = []
+        for rgb_value_position in rgb_value_positions:
+            if rgb_value_position.lower() == 'r':
+                rgbseeds.append(rseed)
+            elif rgb_value_position.lower() == 'g':
+                rgbseeds.append(gseed)
+            elif rgb_value_position.lower() == 'b':
+                rgbseeds.append(bseed)
+
+    characters = {
+            'read_from_file': [],
+            'rgb_offset_applied': [],
+            'groups_of_five': []
+        }
+    groups_of_five = []
+
+    # Loop through and obtain bytes; skip row_padding() bytes
+    for byte in bitmap_values:
+
+        char = list(struct.unpack("<B", byte)).pop()
+
+        if char == 0: # Ignore any row_padding() bytes
+            continue
+
+        characters['read_from_file'].append(char)
+
+    characters['read_from_file'].reverse()
+
+    if debug_mode:
+        import copy
+        still_encoded = copy.deepcopy(characters['read_from_file'])
+
+    # Apply RGB offsets
+    for char in characters['read_from_file']:
+
+        rgbseed = rgbseeds.pop(0)
+        rgbseeds.append(rgbseed)
+
+        if (char - rgbseed) < 0:
+            char -= rgbseed
+            char += 255
         else:
+            char -= rgbseed
 
-            offset = instructions[0]
-            addition_value_positions = list(instructions[1])
-            rgb_value_positions = instructions[2]
+        characters['rgb_offset_applied'].append(char)
 
-            rgbseeds = []
-            for rgb_value_position in rgb_value_positions:
-                if rgb_value_position.lower() == 'r':
-                    rgbseeds.append(rseed)
-                elif rgb_value_position.lower() == 'g':
-                    rgbseeds.append(gseed)
-                elif rgb_value_position.lower() == 'b':
-                    rgbseeds.append(bseed)        
+    # Clump into groups of five
+    for char in characters['rgb_offset_applied']:
 
-        characters = {
-                'read_from_file': [],
-                'rgb_offset_applied': [],
-                'groups_of_five': []
-            }
-        groups_of_five = []
+        groups_of_five.append(char)
 
-        # Loop through and obtain bytes; skip row_padding() bytes
-        for byte in decode_file.read():
+        if len(groups_of_five) == 5:
+            characters['groups_of_five'].append(groups_of_five)
+            groups_of_five = []
+    else:
+        if len(groups_of_five) > 0:
+            characters['groups_of_five'].append(groups_of_five)
 
-            char = list(struct.unpack("<B", byte)).pop()
+    if debug_mode:
+        decoded_values = []
 
-            if char == 0: # Ignore any row_padding() bytes
-                continue
+    # Apply addition value position unscrambling and decode                        
+    for group_of_five in characters['groups_of_five']:
 
-            characters['read_from_file'].append(char)
+        addition_value_position = int(addition_value_positions.pop(0))
+        addition_value_positions.append(addition_value_position)
 
-        characters['read_from_file'].reverse()
-
-        if debug_mode:
-            import copy
-            still_encoded = copy.deepcopy(characters['read_from_file'])
-
-        # Apply RGB offsets
-        for char in characters['read_from_file']:
-
-            rgbseed = rgbseeds.pop(0)
-            rgbseeds.append(rgbseed)
-
-            if (char - rgbseed) < 0:
-                char -= rgbseed
-                char += 255
-            else:
-                char -= rgbseed
-
-            characters['rgb_offset_applied'].append(char)
-
-        # Clump into groups of five
-        for char in characters['rgb_offset_applied']:
-
-            groups_of_five.append(char)
-
-            if len(groups_of_five) == 5:
-                characters['groups_of_five'].append(groups_of_five)
-                groups_of_five = []
+        if len(group_of_five) == 5:
+            addition_value = group_of_five.pop(addition_value_position)
+            group_of_five.append(addition_value)
         else:
-            if len(groups_of_five) > 0:
-                characters['groups_of_five'].append(groups_of_five)
-
-        if debug_mode:
-            decoded_values = []
-
-        # Apply addition value position unscrambling and decode                        
-        for group_of_five in characters['groups_of_five']:
-
-            addition_value_position = int(addition_value_positions.pop(0))
-            addition_value_positions.append(addition_value_position)
-
-            if len(group_of_five) == 5:
-                addition_value = group_of_five.pop(addition_value_position)
-                group_of_five.append(addition_value)
+            while len(group_of_five) < 4:
+                group_of_five.append(1) # Multiplication value
             else:
-                while len(group_of_five) < 4:
-                    group_of_five.append(1) # Multiplication value
-                else:
-                    group_of_five.append(0) # Addition value
-                    
-            for char in group_of_five:
+                group_of_five.append(0) # Addition value
+                
+        for char in group_of_five:
 
-                character_counter += 1
+            character_counter += 1
 
-                if character_counter < 5:
-                    original_value *= char
-                    
-                elif character_counter == 5:
+            if character_counter < 5:
+                original_value *= char
+                
+            elif character_counter == 5:
 
-                    original_value += char
+                original_value += char
 
-                    try:
-                        decoded_text.append(unichr(original_value + offset))
-                        if debug_mode:
-                            decoded_values.append(original_value + offset)
-                    except ValueError:
-                        return "[FAILED] Decode failed for Code Point #{0}; confirm that you are using the correct RGB seeds, addition value positions, and RGB value positions.".format(original_value + offset)
-                    
-                    character_counter = 0
-                    original_value = 1
+                try:
+                    decoded_text.append(unichr(original_value + offset))
+                    if debug_mode:
+                        decoded_values.append(original_value + offset)
+                except ValueError:
+                    return "[FAILED] Decode failed for Code Point #{0}; confirm that you are using the correct RGB seeds, addition value positions, and RGB value positions.".format(original_value + offset)
+                
+                character_counter = 0
+                original_value = 1
 
-        if debug_mode:
+    if debug_mode:
 
-            with open('debug_decode.csv', 'w') as debug_decode_file:
+        with open('debug_decode.csv', 'w') as debug_decode_file:
 
-                # Write the header.  It's a csv, so use abbreviations to preserve column width
-                debug_decode_file.write('---,ENC,---,|||,---,DEC,---\n') # Three columns for the still-encoded values, three for the decoded values
+            # Write the header.  It's a csv, so use abbreviations to preserve column width
+            debug_decode_file.write('---,ENC,---,|||,---,DEC,---\n') # Three columns for the still-encoded values, three for the decoded values
 
-                encoded_triplets = []
-                encoded_triplet = []
+            encoded_triplets = []
+            encoded_triplet = []
 
-                for still_encoded_value in still_encoded:
-                    encoded_triplet.append(still_encoded_value)
+            for still_encoded_value in still_encoded:
+                encoded_triplet.append(still_encoded_value)
 
-                    if len(encoded_triplet) == 3:
-                        encoded_triplets.append(encoded_triplet)
-                        encoded_triplet = []
+                if len(encoded_triplet) == 3:
+                    encoded_triplets.append(encoded_triplet)
+                    encoded_triplet = []
 
-                # There will be 5x fewer decoded numbers since there are four multiplication values and an addition value to create each one
-                while len(decoded_values) < len(still_encoded):
-                    decoded_values.append('') # This will let me use zip below.
+            # There will be 5x fewer decoded numbers since there are four multiplication values and an addition value to create each one
+            while len(decoded_values) < len(still_encoded):
+                decoded_values.append('') # This will let me use zip below.
 
-                decoded_triplets = []
-                decoded_triplet = []
+            decoded_triplets = []
+            decoded_triplet = []
 
-                for decoded_value in decoded_values:
-                    decoded_triplet.append(decoded_value)
+            for decoded_value in decoded_values:
+                decoded_triplet.append(decoded_value)
 
-                    if len(decoded_triplet) == 3:
-                        decoded_triplets.append(decoded_triplet)
-                        decoded_triplet = []
+                if len(decoded_triplet) == 3:
+                    decoded_triplets.append(decoded_triplet)
+                    decoded_triplet = []
 
-                for (encoded_triplet, decoded_triplet) in zip(encoded_triplets, decoded_triplets):
-                    debug_decode_file.write('{0},|||,{1}\n'.format(','.join([str(ec3) for ec3 in encoded_triplet]), ','.join([str(dc3) for dc3 in decoded_triplet])))
+            for (encoded_triplet, decoded_triplet) in zip(encoded_triplets, decoded_triplets):
+                debug_decode_file.write('{0},|||,{1}\n'.format(','.join([str(ec3) for ec3 in encoded_triplet]), ','.join([str(dc3) for dc3 in decoded_triplet])))
 
     return ''.join(decoded_text).replace(u"\u3000", "\n").replace(u"\u2003", "\r").replace(u"\u2000", " ").replace(u"\u2004", "\t")
 
