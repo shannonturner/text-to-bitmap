@@ -1,0 +1,11 @@
+# Examples file
+# Commented lines will be ignored
+# This will go through 569520 combinations
+hex_start=000000
+hex_end=000001
+avp_min=1
+avp_max=2
+rgb_min=1
+rgb_max=2
+off_min=30
+off_max=255
