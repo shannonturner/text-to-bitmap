@@ -9,6 +9,7 @@ def api_front(self, **kwargs):
     rgbseed = kwargs.get('rgbseed')
     addvalpos = kwargs.get('addvalpos')
     rgborder = kwargs.get('rgborder')
+    password = kwargs.get('password')
 
     text_to_encode = kwargs.get('text_to_encode')
 
@@ -29,6 +30,9 @@ def api_front(self, **kwargs):
         if rgborder is not None:
             param_string = "{0}&rgborder={1}".format(param_string, rgborder)
 
+        if password is not None:
+            param_string = "{0}&password={1}".format(param_string, password)
+
         response = requests.get('http://shannonvturner.com/t2b/text_to_bitmap{0}'.format(param_string)).json()
 
         if response.get('error') is None:
@@ -39,16 +43,21 @@ def api_front(self, **kwargs):
 
             page_source.append('<br><b>For your intended recipient to be able to decode the message properly, they will need these SECRET INSTRUCTIONS</b><br>')
 
+            page_source.append('<br>Password: <b>{0}</b> <br><i>OR: </i><br>'.format(password))
+
             page_source.append('<ul><li>Addition Value Position Ordering: {0}</li>'.format(response['addvalpos']))
             page_source.append('<li>RGB Ordering: {0}</li>'.format(response['rgborder']))
             page_source.append('<li>RGB Seed: {0}</li>'.format(response['rgbseed']))
             page_source.append('<li>Offset: {0}</li></ul>'.format(response['offset']))
 
-    elif action == 'decode' and bitmap_filename is not None and offset is not None and rgbseed is not None and addvalpos is not None and rgborder is not None:
+    elif action == 'decode' and bitmap_filename is not None and ((offset is not None and rgbseed is not None and addvalpos is not None and rgborder is not None) or password is not None):
         
         import requests
 
-        param_string = '?bitmap_filename={0}&offset={1}&rgbseed={2}&addvalpos={3}&rgborder={4}'.format(bitmap_filename, offset, rgbseed, addvalpos, rgborder)
+        if password is not None:
+            param_string = '?bitmap_filename={0}&password={1}'.format(bitmap_filename, password)
+        else:
+            param_string = '?bitmap_filename={0}&offset={1}&rgbseed={2}&addvalpos={3}&rgborder={4}'.format(bitmap_filename, offset, rgbseed, addvalpos, rgborder)
 
         response = requests.get('http://shannonvturner.com/t2b/bitmap_to_text{0}'.format(param_string)).json()
 
