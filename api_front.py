@@ -32,6 +32,8 @@ def api_front(self, **kwargs):
 
         if password is not None:
             param_string = "{0}&password={1}".format(param_string, password)
+        else:
+            password = "{0}_{1}_{2}_{3}".format(offset, rgbseed, addvalpos, rgborder)
 
         response = requests.get('http://shannonvturner.com/t2b/text_to_bitmap{0}'.format(param_string)).json()
 
