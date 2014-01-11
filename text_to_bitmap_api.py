@@ -7,11 +7,18 @@ def bitmap_to_text_api(self, **kwargs):
     rgbseed = kwargs.get('rgbseed')
     addvalpos = kwargs.get('addvalpos')
     rgborder = kwargs.get('rgborder')
+    password = kwargs.get('password')
 
     import json
 
-    if bitmap_filename is None or offset is None or rgbseed is None or addvalpos is None or rgborder is None:
-        return json.dumps({'error': 'All fields (bitmap_filename, offset, rgbseed, addvalpos, rgborder) required.'})
+    if bitmap_filename is None or ((offset is None or rgbseed is None or addvalpos is None or rgborder is None) and password is None):
+        return json.dumps({'error': 'All fields (bitmap_filename, password) OR (bitmap_filename, offset, rgbseed, addvalpos, rgborder) required.'})
+
+    if password is not None and offset is None and rgbseed is None and addvalpos is None and rgborder is None:
+        try:
+            offset, rgbseed, addvalpos, rgborder = password.split('_')
+        except Exception:
+            return json.dumps({'error': 'Password field formed incorrectly; please use underscore as a delimiter'})
 
     import requests
 
@@ -65,12 +72,14 @@ def text_to_bitmap_api(self, **kwargs):
     bitmap_filename = 'temp_bmp_{0}-{1}.bmp'.format(''.join([str(time_chunk) for time_chunk in time.localtime()[:6]]), unique_id)
     
     offset = uni_encode_text_as_image(text_to_encode, bitmap_filename, rgbseed, [addvalpos, rgborder], as_plaintext = True)
+    password = "{0}_{1}_{2}_{3}".format(offset, rgbseed, addvalpos, rgborder)
 
     return json.dumps({'offset': offset,
                        'rgbseed': rgbseed,
                        'addvalpos': addvalpos,
                        'rgborder': rgborder,
-                       'file_url': bitmap_filename
+                       'file_url': bitmap_filename,
+                       'password': password
                        })
 
 
