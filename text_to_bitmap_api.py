@@ -35,8 +35,8 @@ def bitmap_to_text_api(self, **kwargs):
 
     try:
         return json.dumps({'decoded_text': u'{0}'.format(uni_decode_image_as_text(image_to_decode, rgbseed, instructions, as_plaintext=True))})
-    except Exception:
-        return json.dumps({'decode_error': 'Failed to decode.  Are you sure your decoding instructions are correct?'})
+    except Exception, e:
+        return json.dumps({'decode_error': 'Failed to decode.  Are you sure your decoding instructions are correct? Error code: {0}'.format(e)})
 
     
 
