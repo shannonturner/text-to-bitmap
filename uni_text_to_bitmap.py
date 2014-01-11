@@ -333,7 +333,7 @@ def uni_decode_image_as_text(image_filename, seed = "000000", instructions = Non
         with open(temp_filename, 'wb') as temp_file:
             temp_file.write(image_filename)
 
-        with open(image_filename, "rb") as decode_file:
+        with open(temp_filename, "rb") as decode_file:
             discard_header = decode_file.read(54)
             bitmap_values = decode_file.read()
 
