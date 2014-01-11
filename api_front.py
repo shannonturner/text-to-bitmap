@@ -32,9 +32,7 @@ def api_front(self, **kwargs):
 
         if password is not None:
             param_string = "{0}&password={1}".format(param_string, password)
-        else:
-            password = "{0}_{1}_{2}_{3}".format(offset, rgbseed, addvalpos, rgborder)
-
+        
         response = requests.get('http://shannonvturner.com/t2b/text_to_bitmap{0}'.format(param_string)).json()
 
         if response.get('error') is None:
@@ -45,7 +43,7 @@ def api_front(self, **kwargs):
 
             page_source.append('<br><b>For your intended recipient to be able to decode the message properly, they will need these SECRET INSTRUCTIONS</b><br>')
 
-            page_source.append('<br>Password: <b>{0}</b> <br><i>OR: </i><br>'.format(password))
+            page_source.append('<br>Password: <b>{0}</b> <br><i>OR: </i><br>'.format(response['password']))
 
             page_source.append('<ul><li>Addition Value Position Ordering: {0}</li>'.format(response['addvalpos']))
             page_source.append('<li>RGB Ordering: {0}</li>'.format(response['rgborder']))
