@@ -14,6 +14,7 @@ def api_front(self, **kwargs):
     text_to_encode = kwargs.get('text_to_encode')
 
     page_source = []
+    page_source.append('<body bgcolor="#ffffff">')
 
     if action == 'encode' and text_to_encode is not None:
         import requests
