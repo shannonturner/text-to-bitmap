@@ -1,6 +1,6 @@
 #Text-to-Bitmap
 
-(psst ... what's a bitmap? -- a bitmap is a type of image)
+(psst ... a bitmap is a type of image)
 
 #####Problem this Solves
 Journalists, activists, and others who need to pass secret messages to prevent interception and decoding by third parties can use Text-to-bitmap to create images that look like random static. The images created are small and can often be hidden in plain sight as part of a larger image (steganography.)
